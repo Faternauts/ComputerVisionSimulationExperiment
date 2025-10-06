@@ -1,0 +1,14 @@
+# Computer Vision App - Dependencies
+# Daftar library yang diperlukan untuk menjalankan aplikasi
+
+# OpenCV untuk computer vision
+opencv-contrib-python>=4.8.0
+
+# MediaPipe untuk hand skeleton detection
+mediapipe>=0.10.0
+
+# NumPy untuk operasi array (biasanya terinstall dengan OpenCV)
+numpy>=1.21.0
+
+# Pillow untuk pemrosesan gambar
+Pillow>=9.0.0
