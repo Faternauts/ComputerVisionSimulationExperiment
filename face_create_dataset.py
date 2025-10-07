@@ -25,6 +25,37 @@ def create_dataset(person_id, person_name):
     - person_id: ID unik untuk orang tersebut (integer)
     - person_name: Nama orang yang akan dideteksi
     """
+    # Konfigurasi jumlah foto
+    TOTAL_PHOTOS = 150
+    
+    # Konfirmasi kesiapan
+    print("\n" + "=" * 60)
+    print("📸 PERSIAPAN PENGAMBILAN FOTO")
+    print("=" * 60)
+    print(f"👤 Nama: {person_name}")
+    print(f"🆔 ID: {person_id}")
+    print(f"📷 Jumlah foto yang akan diambil: {TOTAL_PHOTOS} foto")
+    print("\n💡 TIPS UNTUK HASIL TERBAIK:")
+    print("   ✓ Pastikan pencahayaan cukup terang")
+    print("   ✓ Hadapkan wajah langsung ke kamera")
+    print("   ✓ Gerakkan kepala ke berbagai arah:")
+    print("     - Kiri, kanan, atas, bawah")
+    print("     - Sedikit miring")
+    print("     - Berbagai ekspresi wajah")
+    print("   ✓ Jarak ideal: 50-100 cm dari kamera")
+    print("\n⏱️  Estimasi waktu: ~2-3 menit")
+    print("=" * 60)
+    
+    # Tanya konfirmasi
+    ready = input("\n❓ Apakah Anda sudah siap? (y/n): ").strip().lower()
+    
+    if ready != 'y' and ready != 'yes':
+        print("\n⚠️  Pengambilan foto dibatalkan.")
+        print("💡 Silakan persiapkan diri dan coba lagi nanti.")
+        return
+    
+    print("\n⏳ Mempersiapkan kamera...")
+    
     # Load classifier
     faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     
@@ -63,9 +94,9 @@ def create_dataset(person_id, person_name):
     
     count = 0  # Penghitung untuk nama file gambar
     
-    print(f"\n✅ Mulai mengambil foto untuk: {person_name} (ID: {person_id})")
-    print("📸 Target: 30 foto")
-    print("💡 Tips: Gerakkan kepala Anda ke berbagai arah untuk hasil lebih baik")
+    print(f"\n✅ Pengambilan foto dimulai!")
+    print(f"📸 Target: {TOTAL_PHOTOS} foto")
+    print("💡 Gerakkan kepala Anda ke berbagai arah untuk hasil lebih baik")
     print("⌨️  Tekan 'q' untuk membatalkan\n")
     
     while True:
@@ -96,24 +127,44 @@ def create_dataset(person_id, person_name):
             filename = dataset_path + "Person-" + str(person_id) + "-" + str(count) + ".jpg"
             cv2.imwrite(filename, gray[y:y + h, x:x + w])
             
-            # Tampilkan progress
-            print(f"✓ Foto {count}/30 tersimpan", end='\r')
+            # Tampilkan progress dengan persentase
+            percentage = int((count / TOTAL_PHOTOS) * 100)
+            print(f"✓ Foto {count}/{TOTAL_PHOTOS} tersimpan ({percentage}%)", end='\r')
         
         # Tampilkan progress di frame
-        cv2.putText(frame, f"Foto: {count}/30", (10, 30), 
+        progress_text = f"Foto: {count}/{TOTAL_PHOTOS} ({int((count/TOTAL_PHOTOS)*100)}%)"
+        cv2.putText(frame, progress_text, (10, 30), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         cv2.putText(frame, f"Nama: {person_name}", (10, 60), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         
+        # Tampilkan instruksi
+        if count < 30:
+            instruction = "Hadap depan"
+        elif count < 60:
+            instruction = "Tengok kiri/kanan"
+        elif count < 90:
+            instruction = "Kepala atas/bawah"
+        elif count < 120:
+            instruction = "Miring kiri/kanan"
+        else:
+            instruction = "Berbagai ekspresi"
+        
+        cv2.putText(frame, instruction, (10, 90), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
+        
         # Tampilkan frame
         cv2.imshow("Create Dataset - Tekan 'q' untuk batal", frame)
         
-        # Keluar jika 'q' ditekan atau sudah 30 foto
+        # Keluar jika 'q' ditekan atau sudah mencapai target
         if cv2.waitKey(1) & 0xFF == ord('q'):
             print("\n\n⚠️  Dibatalkan oleh pengguna")
+            print(f"📊 Total foto yang tersimpan: {count}/{TOTAL_PHOTOS}")
             break
-        elif count >= 30:
-            print(f"\n\n✅ Berhasil! 30 foto untuk {person_name} telah tersimpan")
+        elif count >= TOTAL_PHOTOS:
+            print(f"\n\n🎉 BERHASIL! {TOTAL_PHOTOS} foto untuk '{person_name}' telah tersimpan")
+            print(f"📁 Lokasi: {dataset_path}")
+            print(f"🆔 ID: {person_id}")
             break
     
     # Bersihkan

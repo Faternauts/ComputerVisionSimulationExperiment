@@ -130,12 +130,22 @@ def run_create_dataset():
             input("\nTekan Enter untuk kembali ke menu...")
             return
         
-        print(f"\n📷 Mengambil 30 foto untuk: {person_name} (ID: {person_id})")
-        print("⏳ Memuat modul dan menginisialisasi kamera...")
-        print("Tekan 'q' untuk membatalkan\n")
-        
         from face_create_dataset import create_dataset
         create_dataset(int(person_id), person_name)
+        
+        # Reminder untuk training
+        print("\n" + "=" * 60)
+        print("⚠️  PENTING! LANGKAH SELANJUTNYA:")
+        print("=" * 60)
+        print("📌 Dataset berhasil dibuat, tapi model BELUM diperbarui!")
+        print("📌 Agar sistem bisa mengenali wajah baru, Anda HARUS:")
+        print("   1️⃣  Kembali ke menu utama")
+        print("   2️⃣  Pilih menu 4 (Training Model)")
+        print("   3️⃣  Tunggu training selesai")
+        print("   4️⃣  Baru bisa gunakan Face Recognition (menu 5)")
+        print("\n💡 Tips: Training hanya perlu dilakukan sekali setelah")
+        print("   menambah/mengubah dataset!")
+        print("=" * 60)
     except ImportError as e:
         print(f"❌ Error: Module tidak ditemukan - {e}")
         print("Pastikan file face_create_dataset.py ada di folder yang sama")
@@ -164,6 +174,34 @@ def run_recognition():
     """Menjalankan Face Recognition"""
     print("\n🔍 Face Recognition - Recognize Face")
     print("=" * 60)
+    
+    # Cek apakah model sudah ada
+    import os
+    if not os.path.exists("face-model.yml"):
+        print("❌ Error: Model belum ada!")
+        print("\n💡 Langkah yang harus dilakukan:")
+        print("   1️⃣  Buat dataset dulu (menu 3)")
+        print("   2️⃣  Training model (menu 4)")
+        print("   3️⃣  Baru bisa gunakan Face Recognition")
+        input("\nTekan Enter untuk kembali ke menu...")
+        return
+    
+    # Cek jumlah orang di database vs peringatan
+    try:
+        import json
+        if os.path.exists("names_database.json"):
+            with open("names_database.json", "r") as f:
+                names_dict = json.load(f)
+                num_people = len(names_dict)
+                if num_people > 0:
+                    print(f"📊 Dataset berisi {num_people} orang: {', '.join(names_dict.values())}")
+                    print("\n⚠️  PERHATIAN:")
+                    print("   Jika Anda baru saja menambah dataset baru,")
+                    print("   pastikan sudah melakukan TRAINING ULANG (menu 4)!")
+                    print("   Jika tidak, sistem akan salah mengenali wajah.\n")
+    except:
+        pass
+    
     print("⏳ Memuat modul dan model...")
     print("📷 Menginisialisasi kamera...")
     print("Tekan 'q' untuk kembali ke menu utama\n")

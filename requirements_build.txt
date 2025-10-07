@@ -1,0 +1,15 @@
+# Requirements untuk Build EXE
+# Install dengan: pip install -r requirements_build.txt
+
+# Core dependencies (sudah ada di requirements.txt)
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+mediapipe>=0.10.0
+numpy>=1.24.0
+Pillow>=10.0.0
+
+# Untuk build EXE
+pyinstaller>=5.13.0
+
+# Optional: Untuk icon
+Pillow>=10.0.0

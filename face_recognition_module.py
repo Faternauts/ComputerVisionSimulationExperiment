@@ -100,28 +100,40 @@ def start_recognition():
             # Prediksi identitas wajah
             id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
             
-            # Tentukan nama dan confidence text
+            # Tentukan nama berdasarkan confidence
+            # Semakin KECIL confidence = Semakin BAGUS (lebih yakin)
             if confidence < 100:
                 # Wajah dikenali dengan baik
                 if id in names_dict:
                     displayName = names_dict[id]
                 else:
                     displayName = f"ID: {id}"
-                confidenceText = "{0}%".format(round(100 - confidence))
-                color = (0, 255, 0)  # Hijau untuk recognized
+                
+                # Tentukan kualitas match berdasarkan confidence
+                if confidence < 50:
+                    match_quality = "Excellent"
+                    color = (0, 255, 0)  # Hijau untuk match sempurna
+                elif confidence < 70:
+                    match_quality = "Good"
+                    color = (0, 200, 200)  # Cyan untuk match bagus
+                else:
+                    match_quality = "Fair"
+                    color = (0, 255, 255)  # Kuning untuk match cukup
+                
+                confidenceText = f"Conf: {round(confidence, 1)} ({match_quality})"
             else:
-                # Wajah tidak dikenali
+                # Wajah tidak dikenali (confidence terlalu tinggi)
                 displayName = "Unknown"
-                confidenceText = "{0}%".format(round(100 - confidence))
+                confidenceText = f"Conf: {round(confidence, 1)}"
                 color = (0, 0, 255)  # Merah untuk unknown
             
             # Tampilkan nama
             cv2.putText(frame, str(displayName), (x + 5, y - 10), 
                         font, 0.8, color, 2)
             
-            # Tampilkan confidence
+            # Tampilkan confidence dengan penjelasan
             cv2.putText(frame, str(confidenceText), (x + 5, y + h + 25), 
-                        font, 0.6, (255, 255, 0), 1)
+                        font, 0.6, color, 2)
         
         # Tampilkan jumlah wajah terdeteksi
         cv2.putText(frame, f"Wajah Terdeteksi: {len(faces)}", (10, 30), 

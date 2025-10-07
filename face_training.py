@@ -78,6 +78,16 @@ def train_model():
     print("🧠 FACE RECOGNITION - TRAINING MODEL")
     print("="*60)
     
+    # Load database nama untuk info
+    import json
+    names_dict = {}
+    if os.path.exists("names_database.json"):
+        with open("names_database.json", "r") as f:
+            names_dict = json.load(f)
+        print(f"\n📋 Dataset yang akan ditraining:")
+        for id_str, name in names_dict.items():
+            print(f"   - ID {id_str}: {name}")
+    
     # Inisialisasi recognizer
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     
@@ -105,6 +115,20 @@ def train_model():
         print(f"   - Jumlah orang: {len(np.unique(ids))}")
         print(f"   - Total foto: {len(faces)}")
         print(f"   - ID yang dilatih: {sorted(np.unique(ids))}")
+        
+        # Tampilkan nama-nama yang ditraining
+        if names_dict:
+            print(f"\n👥 Orang yang bisa dikenali:")
+            for id_num in sorted(np.unique(ids)):
+                name = names_dict.get(str(id_num), f"Unknown-{id_num}")
+                print(f"   ✓ {name} (ID: {id_num})")
+        
+        print("\n" + "="*60)
+        print("🎉 TRAINING BERHASIL!")
+        print("="*60)
+        print("💡 Sekarang Anda bisa menggunakan Face Recognition (menu 5)")
+        print("   untuk mengenali wajah yang sudah ditraining!")
+        print("="*60)
         
     except Exception as e:
         print(f"\n❌ Error saat training model: {e}")
